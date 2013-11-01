@@ -21,9 +21,11 @@ Although the code is quite similar between the two mixins they solve very differ
 
 Memoization is intended to allow a single object instance to remember the result of a method call.  If you have
 ever written something like:
+
     def full_name
       @full_name ||= "#{last_name}, #{first_name}"
 	end
+
 then you have done memoization.  The result is calculated the first time full_name is called.  Subsequent calls return
 the same value and do not incur the overhead of calculating the result.  Trivial in this case, but the work could be quite
 substantial.
