@@ -80,6 +80,15 @@ module ForgetMeNot
 
     def self.cache_options
       @cache_options ||= {expires_in: 12 * 60 * 60}
+      @cache_options.merge(Cacheable.cache_options_threaded)
+    end
+
+    def self.cache_options_threaded
+      Thread.current['cacheable-cache-options'] || {}
+    end
+
+    def self.cache_options_threaded=(options)
+      Thread.current['cacheable-cache-options'] = options
     end
 
     def self.cachers
@@ -96,16 +105,13 @@ module ForgetMeNot
     end
 
     def self.warm(*args)
-      original_options = Cacheable.cache_options.dup
       begin
-        @cache_options = original_options.merge(force: true)
-        Cacheable.cachers_and_descendants.each { |cacher| cacher.cache_warm(organization) }
+        Cacheable.cache_options_threaded = {force: true}
+        Cacheable.cachers_and_descendants.each { |cacher| cacher.cache_warm(args) }
       ensure
-        @cache_options = original_options
+        Cacheable.cache_options_threaded = nil
       end
     end
-
-
 
     private
     def self.default_cache
