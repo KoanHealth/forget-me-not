@@ -1,4 +1,4 @@
-# Forget::Me::Not
+# ForgetMeNot
 
 Provides memoization and caching mixins
 
