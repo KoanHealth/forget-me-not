@@ -37,7 +37,7 @@ module ForgetMeNot
             key_prefix,
             (instance_key && instance_key.call(self)),
             method_name,
-            "#{args.map { |a| a.nil? ? '~~~nil---' : a.to_s }.join('/')}"
+            args.hash
           ].compact.join '/'
 
           puts "key: #{cache_key}" if (defined?(Rails) && Rails.env.test?)
