@@ -16,7 +16,8 @@ Or install it yourself as:
 
     $ gem install forget-me-not
 
-## Usage
+## Background 
+
 Although the code is quite similar between the two mixins they solve very different problems.
 
 Memoization is intended to allow a single object instance to remember the result of a method call.  If you have
@@ -36,6 +37,8 @@ we cached the results of the query allowing us to display the web page in a snap
 
 Our caching mixin is intended to be used with a cache like memcached that is available across your servers.  It includes
 convenience methods to allow cache warming.
+
+## Usage
 
 ### Memoizable Mixin
 TODO
