@@ -1,0 +1,9 @@
+language: ruby
+bundler_args: --without development
+rvm:
+  - 2.0.0
+  - 1.9.3
+notifications:
+  recipients:
+    - andy.davis@koanhealth.com
+    - jerry.clinesmith@koanhealth.com
