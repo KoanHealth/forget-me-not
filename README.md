@@ -1,4 +1,5 @@
 # ForgetMeNot
+[![Build Status](https://secure.travis-ci.org/KoanHealth/forget-me-not.png?branch=master&.png)](http://travis-ci.org/KoanHealth/forget-me-not)
 
 Provides memoization and caching mixins
 
