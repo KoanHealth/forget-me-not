@@ -57,3 +57,6 @@ https://github.com/sferik/twitter/blob/master/lib/twitter/memoizable.rb.  You gu
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
+
+## Copyright
+(c) 2013 Koan Health. See LICENSE.txt for further details.
