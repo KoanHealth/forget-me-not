@@ -107,7 +107,7 @@ module ForgetMeNot
     def self.warm(*args)
       begin
         Cacheable.cache_options_threaded = {force: true}
-        Cacheable.cachers_and_descendants.each { |cacher| cacher.cache_warm(args) }
+        Cacheable.cachers_and_descendants.each { |cacher| cacher.cache_warm(*args) }
       ensure
         Cacheable.cache_options_threaded = nil
       end
