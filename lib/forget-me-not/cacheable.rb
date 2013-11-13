@@ -51,7 +51,7 @@ module ForgetMeNot
       def get_instance_key_proc(instance_key_methods)
         instance_keys = Array.new(instance_key_methods).flatten
         Proc.new do |instance|
-          "[#{instance_keys.map { |key| instance.send(key).to_s }.join ','}]"
+          instance_keys.map { |key| instance.send(key) }.hash
         end
       end
 
