@@ -1,0 +1,11 @@
+source 'https://rubygems.org'
+gemspec path: '..'
+
+
+group :test do
+  gem 'activesupport', '>= 3.2'
+  gem 'coveralls', require: false
+  gem 'rake'
+  gem 'rspec'
+  gem 'timecop'
+end
