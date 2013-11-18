@@ -1,5 +1,7 @@
 # ForgetMeNot
 [![Build Status](https://secure.travis-ci.org/KoanHealth/forget-me-not.png?branch=master&.png)](http://travis-ci.org/KoanHealth/forget-me-not)
+[![Code Climate](https://codeclimate.com/github/KoanHealth/forget-me-not.png)](https://codeclimate.com/github/KoanHealth/forget-me-not)
+[![Coverage Status](https://coveralls.io/repos/KoanHealth/forget-me-not/badge.png?branch=master)](https://coveralls.io/r/KoanHealth/forget-me-not)
 
 Provides memoization and caching mixins
 
