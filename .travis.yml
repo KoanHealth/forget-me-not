@@ -6,4 +6,4 @@ rvm:
 notifications:
   recipients:
     - andy.davis@koanhealth.com
-#    - jerry.clinesmith@koanhealth.com
+    - jerry.clinesmith@koanhealth.com

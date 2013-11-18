@@ -5,6 +5,9 @@ require 'rspec'
 require 'active_support/all'
 require 'timecop'
 
+require 'coveralls'
+Coveralls.wear!
+
 require 'forget-me-not'
 
 
