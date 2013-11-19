@@ -13,15 +13,22 @@ module ForgetMeNot
         methods.each { |m| memoize_method(m, options) }
       end
 
+      def memoize_with_args(*methods)
+        options = methods.last.is_a?(Hash) ? methods.pop : {}
+        options = options.merge(allow_args: true)
+        methods.each { |m| memoize_method(m, options) }
+      end
+
       private
       def memoize_method(method_name, options)
         method = instance_method(method_name)
+        raise 'Cannot memoize with arity > 0.  Use memoize_with_args instead.' if method.arity > 0 && ! options[:allow_args]
         visibility = method_visibility(method_name)
         define_memoized_method(method, options)
         send(visibility, method_name)
       end
 
-      def define_memoized_method(method, options)
+      def define_memoized_method(method, _)
         method_name = method.name.to_sym
         key_prefix = "/memoized_method_result/#{self.name}"
 

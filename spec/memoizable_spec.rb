@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 module ForgetMeNot
+
   class MemoizeTestClass
     include Memoizable
     include MethodCounter
@@ -30,13 +31,13 @@ module ForgetMeNot
       "method5({#{hash_arg.map { |k, v| "#{k}/#{v}" }.join '|' }})"
     end
 
-    memoize :method1, :method2, :method3, :method4, :method5
+    memoize :method1
+    memoize_with_args :method2, :method3, :method4, :method5
   end
 
   describe Memoizable do
     before do
       MemoizeTestClass.clear_calls
-      TestClass2.clear_calls
     end
 
 
@@ -60,6 +61,45 @@ module ForgetMeNot
 
     end
 
+    describe 'memoize arity > 0 calls' do
+      it 'throws an exception if memoize is called for a function with arguments' do
+        expect do
+          Class.new do
+            include Memoizable
+
+            def method(arg)
+            end
+            memoize :method
+          end
+        end.to raise_error 'Cannot memoize with arity > 0.  Use memoize_with_args instead.'
+      end
+
+      it 'allows memoization if the allow_args option is true' do
+        expect do
+          Class.new do
+            include Memoizable
+
+            def method(arg)
+            end
+            memoize :method, allow_args: true
+          end
+        end.not_to raise_error
+      end
+
+      it 'allows memoization if memoize_with_args is called' do
+        expect do
+          Class.new do
+            include Memoizable
+
+            def method(arg)
+            end
+            memoize_with_args :method
+          end
+        end.not_to raise_error
+      end
+
+
+    end
     describe 'memoize arity-1 calls' do
       it 'should memoize calls from the same instance, same argument' do
         foo = MemoizeTestClass.new

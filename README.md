@@ -60,16 +60,40 @@ called once.
         'result'
       end
 
-      def some_other_method(with_an_arg)
+      def method_with_args(with_an_arg)
       	"result2-#{with_an_arg}"
       end
 
-      memoize :some_method, :some_other_method
+      memoize :some_method
+      memoize_with_args :method_with_args
     end
 
-Calls to both some_method and some_other_method are memoized.  Notice that some_other_method takes an argument, differing
-argument values will result in different results being memoized.
+Calls to both some_method and method_with_args are memoized.
 
+#### Caution!
+Use caution when memoizing results on long-lived objects (e.g., objects that live for the life-time of the process).
+Memoized results never expire and the initially calculated result will always be the one that is returned.  This can
+lead to incorrect application logic if the memoized results would differ if calculated at a later time.
+
+_Consider the case of the application that memoizes a user's privileges the first time they are needed.  If the privilege
+container were long lived, it would never reflect a change in the user's privileges.  (There are more subtle ways to
+lose, this is just an obvious example)._
+
+An additional caution is warranted when memoizing methods that take arguments.  Because different argument values result
+in different results being memoized, if the set of arguments is unbounded, a great deal of memory can be consumed to
+hold on to the results.
+
+The easiest way to prevent stale results and excessive consumption of memory when memoizing is to ensure that two
+things are true:
+ - The memoizing object has a finite, well-known life span (e.g., a request)
+ - If arguments are used, the set of possible arguments is bounded
+
+In order to draw attention to the potential issues with argument driven memoization, you must call the memoize_with_args
+method if the method being memoized has arity > 0.
+
+Memoization is a powerful tool, but like all powerful tools, needs to be used with knowledge and respect.
+
+#### Storage
 By default, the memoization code stores results in a simple Hash based cache.  If you have other requirements, perhaps
 a thread-safe storage, then set the ForgetMeNot::Memoization.storage_builder property to a proc that will create a new
 instance of whatever storage you desire.
@@ -128,11 +152,16 @@ key members.
       cache :some_method, :include => :important_property
     end
 
-By default, the cache will attempt to use the Rails cache.  If that isn't found, but ActiveSupport is available, a new
-instance of MemoryStore will be used.  Failing that, cache will raise an error.  This is intended to provide a reasonably
-sane default, but really, set the ForgetMeNot::Cacheable.cache.  Cacheable expects a cache shaped like an
-ActiveSupport::Cacheable::Store
+#### Caution!
+Of course, every argument variation and every included instance property amplifies the potential amount of cache
+memory that is consumed.
 
+#### Storage
+By default, the cache will attempt to use the Rails cache.  If that isn't found, but ActiveSupport is available, a new
+instance of MemoryStore will be used.  Failing that, cache will raise an error.
+
+This is intended to provide a reasonably sane default, but really, set the ForgetMeNot::Cacheable.cache with something
+shaped like an ActiveSupport::Cacheable::Store
 
 ## Origins
 This is an extension of the ideas and approach found here:
