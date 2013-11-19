@@ -111,7 +111,8 @@ The basics are unsurprising:
       cache :some_method
     end
 
-Like memoization, arguments are fully supported and will result in distinct storage to the cache.
+Like memoization, arguments are fully supported and will result in distinct storage to the cache.  Unlike memoization,
+you do not need to call a with_args variant of the cache method.
 
 To control warming the cache, implement the cache_warm method
 
