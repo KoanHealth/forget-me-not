@@ -5,7 +5,9 @@ gemspec path: '..'
 group :test do
   gem 'activesupport', '>= 3.2'
   gem 'coveralls', require: false
+  gem 'rspec'
   gem 'rake'
   gem 'rspec'
+  gem 'simplecov', require: false
   gem 'timecop'
 end

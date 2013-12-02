@@ -14,11 +14,11 @@ Gem::Specification.new do |gem|
   gem.license       = 'MIT'
 
 
-  gem.required_ruby_version     = ">= 1.9"
-  gem.required_rubygems_version = ">= 1.3.6"
+  gem.required_ruby_version     = '>= 1.9'
+  gem.required_rubygems_version = '>= 1.3.6'
 
-  gem.files         = Dir.glob("lib/**/*") + %w(CHANGELOG.md LICENSE.txt README.md Rakefile)
-  gem.test_files    = Dir.glob("spec/**/*")
+  gem.files         = Dir.glob('lib/**/*') + %w(CHANGELOG.md LICENSE.txt README.md Rakefile)
+  gem.test_files    = Dir.glob('spec/**/*')
   gem.require_path  = 'lib'
 
   gem.add_development_dependency 'activesupport', '>= 3.2'
@@ -26,4 +26,5 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'rspec'
   gem.add_development_dependency 'timecop'
   gem.add_development_dependency 'coveralls'
+  gem.add_development_dependency 'simplecov'
 end

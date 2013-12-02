@@ -1,13 +1,17 @@
-require 'rubygems'
 require 'bundler/setup'
-require 'rspec'
+require 'simplecov'
+
+if ENV['TRAVIS']
+  require 'coveralls'
+  SimpleCov.formatter = Coveralls::SimpleCov::Formatter
+end
+
+SimpleCov.start do
+  add_filter '/spec/'
+end
 
 require 'active_support/all'
 require 'timecop'
-
-require 'coveralls'
-Coveralls.wear!
-
 require 'forget-me-not'
 
 
