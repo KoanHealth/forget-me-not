@@ -30,6 +30,12 @@ module ForgetMeNot
       "method5({#{hash_arg.map { |k, v| "#{k}/#{v}" }.join '|' }})"
     end
 
+    def self.cache_warm(*args)
+      item = new
+      item.method1
+      item.method2(args.first)
+    end
+
     cache_results :method1, :method2, :method3, :method4, :method5
   end
 
@@ -93,6 +99,22 @@ module ForgetMeNot
 
         expect(TestClass.count(:method1)).to eq 2
       end
+
+      it 'should raise an error if called with a block on initial caching' do
+        foo = TestClass.new
+        expect do
+          foo.method1 {'a block'}
+        end.to raise_error 'Cannot pass blocks to cached methods'
+      end
+
+      it 'should raise an error if called with a block after initial caching' do
+        foo = TestClass.new
+        foo.method1
+        expect do
+          foo.method1 {'a block'}
+        end.to raise_error 'Cannot pass blocks to cached methods'
+      end
+
     end
 
     describe 'cache arity-1 calls' do
@@ -193,6 +215,31 @@ module ForgetMeNot
         expect(Cacheable.cachers_and_descendants & expected).to eq expected
       end
 
+      it 'Cache Warming should call warmed methods' do
+        Cacheable.warm('foo')
+
+        expect(TestClass.count(:method1)).to eq 1
+        expect(TestClass.count(:method2)).to eq 1
+        expect(TestClass.count(:method3)).to eq 0
+        expect(TestClass.count(:method4)).to eq 0
+        expect(TestClass.count(:method5)).to eq 0
+      end
+
+      it 'Cache Warming should call warm methods again' do
+        TestClass.new.method1
+        TestClass.new.method2('foo')
+
+        expect(TestClass.count(:method1)).to eq 1
+        expect(TestClass.count(:method2)).to eq 1
+
+        Cacheable.warm('foo')
+
+        expect(TestClass.count(:method1)).to eq 2
+        expect(TestClass.count(:method2)).to eq 2
+        expect(TestClass.count(:method3)).to eq 0
+        expect(TestClass.count(:method4)).to eq 0
+        expect(TestClass.count(:method5)).to eq 0
+      end
     end
   end
 end

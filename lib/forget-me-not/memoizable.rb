@@ -33,7 +33,9 @@ module ForgetMeNot
         key_prefix = "/memoized_method_result/#{self.name}"
 
         undef_method(method_name)
-        define_method(method_name) do |*args|
+        define_method(method_name) do |*args, &block|
+          raise 'Cannot pass blocks to memoized methods' if block
+
           memoize_key = [
             key_prefix,
             method_name,

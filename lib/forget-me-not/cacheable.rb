@@ -32,7 +32,9 @@ module ForgetMeNot
         instance_key = get_instance_key_proc(options[:include]) if options.has_key?(:include)
 
         undef_method(method_name)
-        define_method(method_name) do |*args|
+        define_method(method_name) do |*args, &block|
+          raise 'Cannot pass blocks to cached methods' if block
+
           cache_key = [
             key_prefix,
             (instance_key && instance_key.call(self)),

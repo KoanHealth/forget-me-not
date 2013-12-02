@@ -93,6 +93,9 @@ method if the method being memoized has arity > 0.
 
 Memoization is a powerful tool, but like all powerful tools, needs to be used with knowledge and respect.
 
+#### Blocks
+You may not pass a block to a memoized method.  Attempting to do so results in an error being raised.
+
 #### Storage
 By default, the memoization code stores results in a simple Hash based cache.  If you have other requirements, perhaps
 a thread-safe storage, then set the ForgetMeNot::Memoization.storage_builder property to a proc that will create a new
@@ -156,6 +159,9 @@ key members.
 #### Caution!
 Of course, every argument variation and every included instance property amplifies the potential amount of cache
 memory that is consumed.
+
+#### Blocks
+You may not pass a block to a cached method.  Attempting to do so results in an error being raised.
 
 #### Storage
 By default, the cache will attempt to use the Rails cache.  If that isn't found, but ActiveSupport is available, a new

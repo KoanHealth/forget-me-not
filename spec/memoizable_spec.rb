@@ -59,6 +59,20 @@ module ForgetMeNot
         expect(MemoizeTestClass.count(:method1)).to eq 2
       end
 
+      it 'should raise an error if called with a block on initial memoization' do
+        foo = MemoizeTestClass.new
+        expect do
+          foo.method1 {'a block'}
+        end.to raise_error 'Cannot pass blocks to memoized methods'
+      end
+
+      it 'should raise an error if called with a block after initial memoization' do
+        foo = MemoizeTestClass.new
+        foo.method1
+        expect do
+          foo.method1 {'a block'}
+        end.to raise_error 'Cannot pass blocks to memoized methods'
+      end
     end
 
     describe 'memoize arity > 0 calls' do
