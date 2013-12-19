@@ -1,6 +1,8 @@
 require 'bundler/setup'
 require 'simplecov'
 
+Testing = true
+
 if ENV['TRAVIS']
   require 'coveralls'
   SimpleCov.formatter = Coveralls::SimpleCov::Formatter

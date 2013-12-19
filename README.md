@@ -83,10 +83,14 @@ An additional caution is warranted when memoizing methods that take arguments.  
 in different results being memoized, if the set of arguments is unbounded, a great deal of memory can be consumed to
 hold on to the results.
 
+Memoization uses Ruby's hash() to differentiate arguments.  **If you are using a custom class as an argument to a
+memoized method, you must implement a valid hash method that is computed based upon the properties of the class.**
+
 The easiest way to prevent stale results and excessive consumption of memory when memoizing is to ensure that two
 things are true:
  - The memoizing object has a finite, well-known life span (e.g., a request)
  - If arguments are used, the set of possible arguments is bounded
+ - If arguments are used, every class must have a meaningful hash() method (the built in string, number, array, and hash all meet this criteria)
 
 In order to draw attention to the potential issues with argument driven memoization, you must call the memoize_with_args
 method if the method being memoized has arity > 0.
@@ -115,7 +119,11 @@ The basics are unsurprising:
     end
 
 Like memoization, arguments are fully supported and will result in distinct storage to the cache.  Unlike memoization,
-you do not need to call a with_args variant of the cache method.
+you do not need to call a with_args variant of the cache method.  Caching uses Ruby's to_s() to create a string
+representation of the argument (we can't use Ruby's hash, because the hash value depends upon the runtime).
+
+**If you are using a custom class as an argument to a cached method, you must implement a valid to_s
+method that is computed based upon the properties of the class.**
 
 To control warming the cache, implement the cache_warm method
 

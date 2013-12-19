@@ -1,3 +1,5 @@
+require 'digest'
+
 module ForgetMeNot
 # Allows the cross-system caching of lengthy function calls
   module Cacheable
@@ -39,10 +41,10 @@ module ForgetMeNot
             key_prefix,
             (instance_key && instance_key.call(self)),
             method_name,
-            args.hash
+            Digest::SHA1.hexdigest(args.to_s)
           ].compact.join '/'
 
-          puts "key: #{cache_key}" if (defined?(Rails) && Rails.env.test?)
+          puts "key: #{cache_key}" if defined?(Testing)
 
           Cacheable.cache_fetch(cache_key) do
             method.bind(self).call(*args)
