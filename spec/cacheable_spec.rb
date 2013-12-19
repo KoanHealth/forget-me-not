@@ -201,6 +201,16 @@ module ForgetMeNot
         expect(bar.method1).to eq '[general,201311].method1'
         expect(TestClass2.count(:method1)).to eq 2
       end
+
+      it 'Retains key consistency across process runs' do
+        foo = TestClass2.new('general', 201312)
+        foo.method1
+
+        puts Cacheable.cache.inspect
+        puts Cacheable.cache.instance_variable_get('@data').inspect
+        ugly_hash_key = "dd22a078b1a5e6e8cb2a0f8f0bf1105823103249"
+        expect(Cacheable.cache.read(ugly_hash_key)).not_to be_nil
+      end
     end
 
     describe 'cachers' do

@@ -31,22 +31,27 @@ module ForgetMeNot
       def define_cache_method(method, options)
         method_name = method.name.to_sym
         key_prefix = "/cached_method_result/#{self.name}"
-        instance_key = get_instance_key_proc(options[:include]) if options.has_key?(:include)
+        instance_key_proc = get_instance_key_proc(options[:include]) if options.has_key?(:include)
 
         undef_method(method_name)
         define_method(method_name) do |*args, &block|
           raise 'Cannot pass blocks to cached methods' if block
+          instance_key = instance_key_proc.call(self) if instance_key_proc
+          instance_key_hash = Digest::SHA1.hexdigest(instance_key.to_s) if instance_key
 
           cache_key = [
             key_prefix,
-            (instance_key && instance_key.call(self)),
+            instance_key_hash,
             method_name,
             Digest::SHA1.hexdigest(args.to_s)
           ].compact.join '/'
 
-          puts "key: #{cache_key}" if defined?(Testing)
+          # 'Double bagging' the key makes sure that we do not overflow the range of a string hash key
+          cache_key_hash = Digest::SHA1.hexdigest(cache_key)
 
-          Cacheable.cache_fetch(cache_key) do
+          puts "key: #{cache_key} (#{cache_key_hash})" if defined?(Testing)
+
+          Cacheable.cache_fetch(cache_key_hash) do
             method.bind(self).call(*args)
           end
         end
@@ -55,7 +60,7 @@ module ForgetMeNot
       def get_instance_key_proc(instance_key_methods)
         instance_keys = Array.new(instance_key_methods).flatten
         Proc.new do |instance|
-          instance_keys.map { |key| instance.send(key) }.hash
+          instance_keys.map { |key| instance.send(key) }
         end
       end
 
