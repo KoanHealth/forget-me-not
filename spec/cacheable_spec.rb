@@ -63,6 +63,34 @@ module ForgetMeNot
 
   end
 
+  class TestClassException1
+    include Cacheable
+
+
+    class << self
+      attr_accessor :cache_warm_called
+      def cache_warm(*args)
+        self.cache_warm_called = true
+        raise "We're not going to take it"
+      end
+    end
+  end
+
+  class TestClassException2
+    include Cacheable
+
+    class << self
+      attr_accessor :cache_warm_called
+
+      def cache_warm(*args)
+        self.cache_warm_called = true
+        raise "We're not going to take it"
+      end
+    end
+
+  end
+
+
   describe Cacheable do
     before do
       Cacheable.log_cache_activity = true
@@ -104,7 +132,7 @@ module ForgetMeNot
       it 'should raise an error if called with a block on initial caching' do
         foo = TestClass.new
         expect do
-          foo.method1 {'a block'}
+          foo.method1 { 'a block' }
         end.to raise_error 'Cannot pass blocks to cached methods'
       end
 
@@ -112,7 +140,7 @@ module ForgetMeNot
         foo = TestClass.new
         foo.method1
         expect do
-          foo.method1 {'a block'}
+          foo.method1 { 'a block' }
         end.to raise_error 'Cannot pass blocks to cached methods'
       end
 
@@ -248,6 +276,16 @@ module ForgetMeNot
         expect(TestClass.count(:method3)).to eq 0
         expect(TestClass.count(:method4)).to eq 0
         expect(TestClass.count(:method5)).to eq 0
+      end
+
+      it 'Cache warming should keep going when encountering exceptions' do
+        TestClassException1.cache_warm_called = false
+        TestClassException2.cache_warm_called = false
+
+        Cacheable.warm('foo')
+
+        expect(TestClassException1.cache_warm_called).to be_true
+        expect(TestClassException2.cache_warm_called).to be_true
       end
     end
   end

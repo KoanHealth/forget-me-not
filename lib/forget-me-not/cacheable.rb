@@ -119,7 +119,14 @@ module ForgetMeNot
     def self.warm(*args)
       begin
         Cacheable.cache_options_threaded = {force: true}
-        Cacheable.cachers_and_descendants.each { |cacher| cacher.cache_warm(*args) }
+
+        Cacheable.cachers_and_descendants.each do |cacher|
+          begin
+            cacher.cache_warm(*args)
+          rescue StandardError => e
+            logger.error "Exception encountered when warming #{cacher.name}: #{e.inspect}.  \n\t#{e.backtrace.join("\n\t")}"
+          end
+        end
       ensure
         Cacheable.cache_options_threaded = nil
       end
