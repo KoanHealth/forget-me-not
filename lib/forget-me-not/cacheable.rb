@@ -31,29 +31,32 @@ module ForgetMeNot
       def define_cache_method(method, options)
         method_name = method.name.to_sym
         key_prefix = "/cached_method_result/#{self.name}"
-        instance_key_proc = get_instance_key_proc(options[:include]) if options.has_key?(:include)
+        instance_key = get_instance_key_proc(options[:include]) if options.has_key?(:include)
 
         undef_method(method_name)
         define_method(method_name) do |*args, &block|
           raise 'Cannot pass blocks to cached methods' if block
-          instance_key = instance_key_proc.call(self) if instance_key_proc
-          instance_key_hash = Digest::SHA1.hexdigest(instance_key.to_s) if instance_key
 
           cache_key = [
             key_prefix,
-            instance_key_hash,
+            (instance_key && instance_key.call(self)),
             method_name,
-            Digest::SHA1.hexdigest(args.to_s)
+            args.to_s,
           ].compact.join '/'
 
-          # 'Double bagging' the key makes sure that we do not overflow the range of a string hash key
           cache_key_hash = Digest::SHA1.hexdigest(cache_key)
 
-          puts "key: #{cache_key} (#{cache_key_hash})" if defined?(Testing)
-
-          Cacheable.cache_fetch(cache_key_hash) do
+          cache_hit = true
+          result = Cacheable.cache_fetch(cache_key_hash) do
+            cache_hit = false
             method.bind(self).call(*args)
           end
+
+          if Cacheable.log_cache_activity
+            Cacheable.logger.info "Cache #{cache_hit ? 'hit' : 'miss'} for #{cache_key} (#{cache_key_hash})"
+          end
+
+          result
         end
       end
 
@@ -121,6 +124,30 @@ module ForgetMeNot
         Cacheable.cache_options_threaded = nil
       end
     end
+
+    class << self
+      attr_accessor :log_cache_activity
+
+      def logger
+        return @logger if defined?(@logger)
+        @logger = rails_logger || default_logger
+      end
+
+      def logger=(logger)
+        @logger = logger
+      end
+
+      def rails_logger
+        defined?(Rails) && Rails.respond_to?(:logger) && Rails.logger
+      end
+
+      def default_logger
+        logger = Logger.new(STDOUT)
+        logger.level = Logger::INFO
+        logger
+      end
+    end
+
 
     private
     def self.default_cache

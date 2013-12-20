@@ -1,3 +1,4 @@
+## 0.3.2.1 - Add the ability to log cache hits and misses
 ## 0.3.2.0 - Revise the method for computing keys in cacheable.
 Need to use the digest for both the arguments and the instance properties.
 

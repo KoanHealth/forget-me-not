@@ -65,6 +65,7 @@ module ForgetMeNot
 
   describe Cacheable do
     before do
+      Cacheable.log_cache_activity = true
       Cacheable.cache = ActiveSupport::Cache::MemoryStore.new
       TestClass.clear_calls
       TestClass2.clear_calls
@@ -206,9 +207,7 @@ module ForgetMeNot
         foo = TestClass2.new('general', 201312)
         foo.method1
 
-        puts Cacheable.cache.inspect
-        puts Cacheable.cache.instance_variable_get('@data').inspect
-        ugly_hash_key = "dd22a078b1a5e6e8cb2a0f8f0bf1105823103249"
+        ugly_hash_key = '90914de582dd73182e909216e27b3898120e07c3'
         expect(Cacheable.cache.read(ugly_hash_key)).not_to be_nil
       end
     end
