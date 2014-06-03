@@ -76,6 +76,10 @@ module ForgetMeNot
     def storage
       @storage ||= Memoizable.storage_builder.call
     end
+    
+    def clear_storage
+      @storage = nil
+    end
 
     class << self
       def storage_builder
