@@ -50,6 +50,10 @@ convenience methods to allow cache warming.
 Caching is system wide.  If the same cached method for two separate instances is called, the actual method should only be
 called once.
 
+#### Invalidating Cache (manually)
+
+If you want to invalidate cache for certain object you can run `clear_storage` (on that object)
+
 ## Usage
 
 ### Memoizable Mixin
@@ -177,6 +181,16 @@ instance of MemoryStore will be used.  Failing that, cache will raise an error.
 
 This is intended to provide a reasonably sane default, but really, set the ForgetMeNot::Cacheable.cache with something
 shaped like an ActiveSupport::Cacheable::Store
+
+## Logs in Rails test enviroment
+
+Logs are turn on - by default only in Rails test environment - so everytime we cache method result, it will be displayed in console, you can controll that by overwriting:
+
+```ruby
+    def print_memoization_logs?
+      false
+    end
+```
 
 ## Origins
 This is an extension of the ideas and approach found here:
