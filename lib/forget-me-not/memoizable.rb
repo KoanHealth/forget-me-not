@@ -42,7 +42,7 @@ module ForgetMeNot
             args.hash
           ].compact.join '/'
 
-          puts "key: #{memoize_key}" if (defined?(Rails) && Rails.env.test?)
+          log_memoization(memoize_key) if print_memoization_logs?
 
           fetch_from_storage(memoize_key) do
             method.bind(self).call(*args)
@@ -59,6 +59,14 @@ module ForgetMeNot
           :public
         end
       end
+    end
+    
+    def log_memoization(memoize_key)
+      puts "key: #{memoize_key}"
+    end
+    
+    def print_memoization_logs?
+      defined?(Rails) && Rails.env.test?  
     end
 
     def fetch_from_storage(key, &block)
