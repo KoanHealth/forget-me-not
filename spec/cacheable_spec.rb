@@ -93,7 +93,7 @@ module ForgetMeNot
 
   describe Cacheable do
     before do
-      Cacheable.log_cache_activity = true
+      Cacheable.log_activity = true
       Cacheable.cache = ActiveSupport::Cache::MemoryStore.new
       TestClass.clear_calls
       TestClass2.clear_calls

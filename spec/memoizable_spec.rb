@@ -37,6 +37,8 @@ module ForgetMeNot
 
   describe Memoizable do
     before do
+      Memoizable.log_activity = true
+
       MemoizeTestClass.clear_calls
     end
 

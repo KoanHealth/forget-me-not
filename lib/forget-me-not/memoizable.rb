@@ -6,6 +6,8 @@ module ForgetMeNot
         base.extend(ClassMethods)
       end
     end
+    extend Logging
+
 
     module ClassMethods
       def memoize(*methods)
@@ -22,7 +24,7 @@ module ForgetMeNot
       private
       def memoize_method(method_name, options)
         method = instance_method(method_name)
-        raise 'Cannot memoize with arity > 0.  Use memoize_with_args instead.' if method.arity > 0 && ! options[:allow_args]
+        raise 'Cannot memoize with arity > 0.  Use memoize_with_args instead.' if method.arity > 0 && !options[:allow_args]
         visibility = method_visibility(method_name)
         define_memoized_method(method, options)
         send(visibility, method_name)
@@ -37,12 +39,14 @@ module ForgetMeNot
           raise 'Cannot pass blocks to memoized methods' if block
 
           memoize_key = [
-            key_prefix,
-            method_name,
-            args.hash
+              key_prefix,
+              method_name,
+              args.hash
           ].compact.join '/'
 
-          log_memoization(memoize_key) if print_memoization_logs?
+          if Memoizable.log_activity
+            Memoizable.logger.info("key: #{memoize_key}")
+          end
 
           fetch_from_storage(memoize_key) do
             method.bind(self).call(*args)
@@ -60,13 +64,9 @@ module ForgetMeNot
         end
       end
     end
-    
-    def log_memoization(memoize_key)
-      puts "key: #{memoize_key}"
-    end
-    
-    def print_memoization_logs?
-      defined?(Rails) && Rails.env.test?  
+
+    def log(message)
+      ForgetMeNot.logger.info "key: #{memoize_key}" if ForgetMeNot.logger
     end
 
     def fetch_from_storage(key, &block)
@@ -79,7 +79,7 @@ module ForgetMeNot
 
     class << self
       def storage_builder
-        @storage_builder ||= Proc.new {HashCache.new}
+        @storage_builder ||= Proc.new { HashCache.new }
       end
 
       def storage_builder=(builder)
@@ -88,4 +88,6 @@ module ForgetMeNot
     end
 
   end
+  mattr_accessor :logger
+
 end

@@ -10,6 +10,9 @@ module ForgetMeNot
       end
     end
 
+    extend Logging
+
+
     module ClassMethods
       def cache_results(*methods)
         options = methods.last.is_a?(Hash) ? methods.pop : {}
@@ -38,10 +41,10 @@ module ForgetMeNot
           raise 'Cannot pass blocks to cached methods' if block
 
           cache_key = [
-            key_prefix,
-            (instance_key && instance_key.call(self)),
-            method_name,
-            args.to_s,
+              key_prefix,
+              (instance_key && instance_key.call(self)),
+              method_name,
+              args.to_s,
           ].compact.join '/'
 
           cache_key_hash = Digest::SHA1.hexdigest(cache_key)
@@ -52,7 +55,7 @@ module ForgetMeNot
             method.bind(self).call(*args)
           end
 
-          if Cacheable.log_cache_activity
+          if Cacheable.log_activity
             Cacheable.logger.info "Cache #{cache_hit ? 'hit' : 'miss'} for #{cache_key} (#{cache_key_hash})"
           end
 
@@ -132,40 +135,17 @@ module ForgetMeNot
       end
     end
 
-    class << self
-      attr_accessor :log_cache_activity
-
-      def logger
-        return @logger if defined?(@logger)
-        @logger = rails_logger || default_logger
-      end
-
-      def logger=(logger)
-        @logger = logger
-      end
-
-      def rails_logger
-        defined?(Rails) && Rails.respond_to?(:logger) && Rails.logger
-      end
-
-      def default_logger
-        logger = Logger.new(STDOUT)
-        logger.level = Logger::INFO
-        logger
-      end
-    end
-
 
     private
     def self.default_cache
       rails_cache ||
-      active_support_cache ||
-      raise(
-      <<-ERR_TEXT
-        When using Cacheable in a project that does not have a Rails or ActiveSupport Cache,
-        you must explicitly set the cache to an object shaped like ActiveSupport::Cache::Store
-        ERR_TEXT
-        )
+          active_support_cache ||
+          raise(
+              <<-ERR_TEXT
+          When using Cacheable in a project that does not have a Rails or ActiveSupport Cache,
+          you must explicitly set the cache to an object shaped like ActiveSupport::Cache::Store
+          ERR_TEXT
+          )
     end
 
     def self.rails_cache
@@ -174,9 +154,9 @@ module ForgetMeNot
 
     def self.active_support_cache
       defined?(ActiveSupport) &&
-        defined?(ActiveSupport::Cache) &&
-        defined?(ActiveSupport::Cache::MemoryStore) &&
-        ActiveSupport::Cache::MemoryStore.new
+          defined?(ActiveSupport::Cache) &&
+          defined?(ActiveSupport::Cache::MemoryStore) &&
+          ActiveSupport::Cache::MemoryStore.new
     end
 
   end
