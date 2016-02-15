@@ -135,7 +135,6 @@ module ForgetMeNot
       end
     end
 
-
     private
     def self.default_cache
       rails_cache ||
